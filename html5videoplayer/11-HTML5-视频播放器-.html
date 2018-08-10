@@ -100,6 +100,7 @@
         video.onended = function(){
             video.currentTime = 0
             $(".currentTime").css("width",0)
+            $(".switch").removeClass("fa-pause").addClass("fa-play")
         }
     })
 </script>
