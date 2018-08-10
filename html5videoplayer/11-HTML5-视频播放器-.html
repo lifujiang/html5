@@ -26,19 +26,23 @@
     </div>
 </div>
 <script src="./js/jquery.min.js"></script>
+<script src="./js/screenfull.min.js"></script>
 <script>
     /*通过jq来实现功能*/
     $(function(){
         var video = $("video")[0]
         $(".switch").click(function(){
+            play_pause_icon()
+        })
+
+        function play_pause_icon(){
             if(video.paused){
                 video.play()
             }else{
                 video.pause()
             }
             $(".switch").toggleClass("fa-pause fa-play")
-        })
-
+        }
 
         video.oncanplay = function(){
             video.style.display="block"
@@ -70,14 +74,8 @@
 
 
         $(".expand").click(function(){
-            if(video.requestFullScreen){
-                video.requestFullScreen()
-            }else if(video.webkitRequestFullScreen){
-                video.webkitRequestFullScreen()
-            }else if(video.mozRequestFullScreen){
-                video.mozRequestFullScreen()
-            }else if(video.mozRequestFullScreen){
-                video.mozRequestFullScreen()
+            if(screenfull.enabled){
+                screenfull.request(video)
             }
         })
 
@@ -102,6 +100,26 @@
             $(".currentTime").css("width",0)
             $(".switch").removeClass("fa-pause").addClass("fa-play")
         }
+        var clickFlag = null //是否点击标识
+        function doOnClick(){
+            if(clickFlag) clickFlag = clearTimeout(clickFlag)
+            clickFlag = setTimeout(function(){
+            play_pause_icon()
+        },300)
+        }
+        
+        function doOnDblClick(){
+            if(clickFlag) clickFlag = clearTimeout(clickFlag)
+            screenfull.toggle(video)
+        }
+
+        $("video").click(function() {
+            doOnClick()
+        })
+
+        $("video").dblclick(function(){
+            doOnDblClick()
+        })
     })
 </script>
 </body>
