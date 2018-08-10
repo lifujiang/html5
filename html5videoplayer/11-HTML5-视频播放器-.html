@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="./css/font-awesome.css">
+    <link rel="stylesheet" href="./css/css.css">
+</head>
+<body>
+<h3 class="playerTitle">视频播放器</h3>
+<div class="player">
+    <video src="./mp4/chrome.mp4"></video>
+    <div class="controls">
+        <a href="javascript:;" class="switch fa fa-play"></a>
+        <a href="javascript:;" class="expand fa fa-expand"></a>
+        <div class="progress">
+            <div class="bar"></div>
+            <div class="loaded"></div>
+            <div class="elapse"></div>
+        </div>
+        <div class="time">
+            <span class="currentTime">00:00:00</span>
+            \
+            <span class="totalTime">00:00:00</span>
+        </div>
+    </div>
+</div>
+<script src="./js/jquery.min.js"></script>
+<script>
+    /*通过jq来实现功能*/
+    $(function(){
+        var video = $("video")[0]
+        $(".switch").click(function(){
+            if(video.paused){
+                video.play()
+            }else{
+                video.pause()
+            }
+            $(".switch").toggleClass("fa-pause fa-play")
+        })
+
+
+        video.oncanplay = function(){
+            video.style.display="block"
+            // console.log(video.duration)
+            var duration = video.duration
+            var totalTime = getResult(duration)
+            $(".totalTime").html(totalTime)
+        }
+        // 封装函数，作用：传递一个时间（单位为秒），返回一个hh:mm:ss的时间形式
+        function getResult(time){
+            var hour = Math.floor(time / 3600)
+            hour = hour<10?"0"+hour:hour
+            var minute = Math.floor(time % 3600 / 60)
+            minute = minute<10?"0"+minute:minute
+            var second = Math.floor(time % 60)
+            second = second<10?"0"+second:second
+            return hour+":"+minute+":"+second
+
+        }
+
+        video.ontimeupdate = function(){
+            var currentTime = video.currentTime
+            var elapse = (  currentTime / video.duration) * 100 +"%"
+            // console.log(elapse)
+            $(".elapse").css("width",elapse)
+            var time = getResult(currentTime)
+            $('.currentTime').html(time)
+        }
+
+
+        $(".expand").click(function(){
+            if(video.requestFullScreen){
+                video.requestFullScreen()
+            }else if(video.webkitRequestFullScreen){
+                video.webkitRequestFullScreen()
+            }else if(video.mozRequestFullScreen){
+                video.mozRequestFullScreen()
+            }else if(video.mozRequestFullScreen){
+                video.mozRequestFullScreen()
+            }
+        })
+
+        $(".progress").click(function(e){
+            //点击进度条后，进度条发生的变化
+            barlong = e.offsetX / 430 * 100 + "%"
+            $(".elapse").css("width",barlong)
+            // console.log(barlong)
+
+            //点击进度条后，播放时间的显示发生的变化
+            timelong = e.offsetX / 430 * video.duration
+            ctime = getResult(timelong)
+            // console.log(ctime)
+            $(".currentTime").html(ctime)
+
+            //点击进度条后，播放时间发生变化
+            video.currentTime = timelong
+        });
+
+        video.onended = function(){
+            video.currentTime = 0
+            $(".currentTime").css("width",0)
+        }
+    })
+</script>
+</body>
+</html>
